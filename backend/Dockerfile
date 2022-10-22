@@ -1,9 +1,13 @@
 FROM python:3.8-slim
 
-WORKDIR /app
+WORKDIR /backend
+
+COPY requirements/prod.txt requirements/prod.txt
+COPY requirements/prod.txt requirements/base.txt
+
+RUN pip install -r requirements/prod.txt
 
 COPY . .
 
-RUN pip install -r requirements/prod.txt
 
 CMD ["scripts/startup.sh"]
