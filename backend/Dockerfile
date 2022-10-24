@@ -9,5 +9,8 @@ RUN pip install -r requirements/prod.txt
 
 COPY . .
 
+RUN useradd -ms /backend larisa
+
+USER larisa
 
 CMD ["scripts/startup.sh"]

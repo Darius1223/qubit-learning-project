@@ -3,8 +3,6 @@ version: "3.9"
 services:
   redis:
     image: redis:latest
-    ports:
-      - "6379:6379"
 
   db:
     image: postgres:latest
@@ -28,20 +26,24 @@ services:
       start_period: 40s
     volumes: # fixme
       - ./backend:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379
+      - CELERY_RESULT_BACKEND=redis://redis:6379
     ports:
       - "8001:8000"
     depends_on:
       - redis
       - db
 
-  rq:
+  celery-worker:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: rq worker --with-scheduler --url redis://redis:6379
+    command: celery --app=app.worker.celery worker --loglevel=info
     restart: on-failure
-    volumes: # fixme
-      - ./backend:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379
+      - CELERY_RESULT_BACKEND=redis://redis:6379
     depends_on:
       - backend
       - redis

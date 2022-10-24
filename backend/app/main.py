@@ -1,29 +1,19 @@
+import structlog
 import uvicorn
 from fastapi import FastAPI
-from rq import Retry
 
-from app.tasks import queue
+from app import settings
+from app.router import router
 
-app = FastAPI(debug=True)
+app = FastAPI(debug=settings.DEBUG)
+app.include_router(router=router)
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+logger = structlog.get_logger(module="main")
 
 
-@app.get("/health_check")
-async def root():
-    return {"message": "Health ok!"}
-
-
-@app.get("/test_rq")
-async def root():
-    def say_hello():
-        print("hello world")
-
-    queue.enqueue(say_hello, retry=Retry(max=3))
-    return {"message": "Health ok!"}
+@app.on_event("startup")
+def startup_app():
+    logger.debug("startup application")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 fastapi==0.85.0
-uvicorn==0.18.3
+uvicorn==0.19.0
 redis==4.3.4
-rq==1.11.1
+celery==5.2.7
+structlog==22.1.0
